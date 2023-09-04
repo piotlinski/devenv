@@ -176,4 +176,16 @@ RUN echo "[user]\n\
 	required = true" >> /home/${USERNAME}/.gitconfig
 RUN echo ".envrc\n.direnv/" >> /home/${USERNAME}/.gitignore_global
 
+# configure direnv
+RUN echo "layout_poetry() {\n\
+  if [[ ! -f pyproject.toml ]]; then\n\
+    log_error 'No pyproject.toml found.  Use `poetry new` or `poetry init` to create one first.'\n\
+    exit 2\n\
+  fi\n\n\
+  local VENV=$(dirname $(poetry run which python))\n\
+  export VIRTUAL_ENV=$(echo \"\$VENV\" | rev | cut -d'/' -f2- | rev)\n\
+  export POETRY_ACTIVE=1\n\
+  PATH_add \"\$VENV\"\n\
+}" >> /home/${USERNAME}/.direnvrc
+
 USER root
