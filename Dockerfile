@@ -56,3 +56,13 @@ RUN mkdir /home/${USERNAME}/.ssh \
 RUN service ssh start
 EXPOSE 22
 CMD ["/usr/sbin/sshd","-D"]
+
+# setup locale
+ENV LANG=en_US.UTF-8
+RUN apt-get update \
+    && apt-get install -yqq --no-install-recommends locales \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+RUN locale-gen ${LANG} \
+    && dpkg-reconfigure locales \
+    && update-locale LANG=${LANG} LC_ALL=${LANG}
