@@ -87,3 +87,8 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && usermod -aG docker ${USERNAME}
+
+# setup workspace directory
+RUN mkdir /workspace \
+    && chown -R ${USERNAME}:${USERNAME} /workspace
+WORKDIR /workspace
