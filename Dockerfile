@@ -147,4 +147,33 @@ RUN fish -c "pipx install awscli"
 RUN fish -c "pipx install poetry \
     && poetry completions fish > /home/${USERNAME}/.config/fish/completions/poetry.fish"
 
+# configure git
+ARG GIT_USER_EMAIL
+ARG GIT_USER_NAME
+RUN echo "[user]\n\
+	email = ${GIT_USER_EMAIL}\n\
+	name = ${GIT_USER_NAME}\n\
+[core]\n\
+	excludesfile = /home/${USERNAME}/.gitignore_global\n\
+	editor = vim\n\
+[alias]\n\
+	squash-all = \"!f(){ git reset \$(git commit-tree HEAD^{tree} -m \"${1:-Initial commit}\");};f\"\n\
+[pull]\n\
+	rebase = false\n\
+[init]\n\
+	defaultBranch = master\n\
+[rebase]\n\
+	autosquash = true\n\
+	autostash = true\n\
+[submodule]\n\
+	recurse = true\n\
+[push]\n\
+	autoSetupRemote = true\n\
+[filter \"lfs\"]\n\
+	clean = git-lfs clean -- %f\n\
+	smudge = git-lfs smudge -- %f\n\
+	process = git-lfs filter-process\n\
+	required = true" >> /home/${USERNAME}/.gitconfig
+RUN echo ".envrc\n.direnv/" >> /home/${USERNAME}/.gitignore_global
+
 USER root
