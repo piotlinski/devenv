@@ -92,3 +92,31 @@ RUN apt-get update \
 RUN mkdir /workspace \
     && chown -R ${USERNAME}:${USERNAME} /workspace
 WORKDIR /workspace
+
+# setup and configure fish
+RUN apt-add-repository ppa:fish-shell/release-3 \
+    && apt-get update \
+    && apt-get install -yqq --no-install-recommends fish direnv \
+    && chsh -s /usr/bin/fish ${USERNAME}
+
+USER ${USERNAME}
+RUN fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher \
+    && fisher install IlanCosman/tide@v5 \
+    && fisher install jhillyerd/plugin-git \
+    && fisher install halostatue/fish-docker \
+    && set -U fish_greeting "" \
+    && set -U tide_cmd_duration_icon \uf252 \
+    && set -U tide_git_icon \uf1d3 \
+    && set -U tide_left_prompt_items os\x1epwd\x1egit\x1enewline\x1echaracter \
+    && set -U tide_left_prompt_prefix \x1d \
+    && set -U tide_os_icon \uf31b \
+    && set -U tide_prompt_color_frame_and_connection 808080 \
+    && set -U tide_prompt_icon_connection \u00b7 \
+    && set -U tide_pwd_icon \uf07c \
+    && set -U tide_pwd_icon_home \uf015 \
+    && set -U tide_right_prompt_items status\x1ecmd_duration\x1econtext\x1ejobs\x1edirenv\x1enode\x1evirtual_env\x1erustc\x1ejava\x1ephp\x1epulumi\x1echruby\x1ego\x1egcloud\x1ekubectl\x1edistrobox\x1etoolbox\x1eterraform\x1eaws\x1enix_shell\x1ecrystal\x1eelixir\x1etime \
+    && set -U tide_right_prompt_suffix \x1d \
+    && echo 'alias tmux=\"tmux -u\"' >> /home/${USERNAME}/.config/fish/config.fish \
+    && echo 'direnv hook fish | source' >> /home/${USERNAME}/.config/fish/config.fish"
+
+USER root
