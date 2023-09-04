@@ -15,3 +15,11 @@ RUN groupadd --gid ${USER_GID} ${USERNAME} \
     && useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} \
     && echo ${USERNAME} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USERNAME} \
     && chmod 0440 /etc/sudoers.d/${USERNAME}
+
+# basic dependencies
+RUN apt-get update \
+    && apt-get install -yqq --no-install-recommends \
+    build-essential vim less git git-lfs wget curl apt-utils software-properties-common \
+    iputils-ping dnsutils traceroute \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
