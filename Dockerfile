@@ -128,4 +128,10 @@ RUN fish -c "git clone https://github.com/pyenv/pyenv.git /home/${USERNAME}/.pye
     && pyenv install ${GLOBAL_PYTHON_VERSION} \
     && pyenv global ${GLOBAL_PYTHON_VERSION}"
 
+# setup pipx
+RUN fish -c "python3 -m pip install --user pipx \
+    && python3 -m pipx ensurepath \
+    && fish_add_path /home/${USERNAME}/.local/bin \
+    && register-python-argcomplete --shell fish pipx > /home/${USERNAME}/.config/fish/completions/pipx.fish"
+
 USER root
