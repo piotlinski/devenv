@@ -134,4 +134,17 @@ RUN fish -c "python3 -m pip install --user pipx \
     && fish_add_path /home/${USERNAME}/.local/bin \
     && register-python-argcomplete --shell fish pipx > /home/${USERNAME}/.config/fish/completions/pipx.fish"
 
+# install python development tools
+RUN fish -c "pipx install black"
+RUN fish -c "pipx install flake8"
+RUN fish -c "pipx install isort"
+RUN fish -c "pipx install mypy"
+RUN fish -c "pipx install ruff"
+RUN fish -c "pipx install pytest"
+RUN fish -c "pipx install tox"
+RUN fish -c "pipx install pre-commit"
+RUN fish -c "pipx install awscli"
+RUN fish -c "pipx install poetry \
+    && poetry completions fish > /home/${USERNAME}/.config/fish/completions/poetry.fish"
+
 USER root
