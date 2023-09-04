@@ -119,4 +119,13 @@ RUN fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main
     && echo 'alias tmux=\"tmux -u\"' >> /home/${USERNAME}/.config/fish/config.fish \
     && echo 'direnv hook fish | source' >> /home/${USERNAME}/.config/fish/config.fish"
 
+# setup pyenv
+ARG GLOBAL_PYTHON_VERSION=miniconda3-latest
+RUN fish -c "git clone https://github.com/pyenv/pyenv.git /home/${USERNAME}/.pyenv \
+    && fish_add_path /home/${USERNAME}/.pyenv/bin \ && set -Ux PYENV_ROOT /home/${USERNAME}/.pyenv \
+    && cd /home/${USERNAME}/.pyenv && src/configure && make -C src \
+    && echo 'pyenv init - | source' >> /home/${USERNAME}/.config/fish/config.fish \
+    && pyenv install ${GLOBAL_PYTHON_VERSION} \
+    && pyenv global ${GLOBAL_PYTHON_VERSION}"
+
 USER root
