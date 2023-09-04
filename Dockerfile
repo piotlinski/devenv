@@ -188,4 +188,8 @@ RUN echo "layout_poetry() {\n\
   PATH_add \"\$VENV\"\n\
 }" >> /home/${USERNAME}/.direnvrc
 
+# minor tweaks
+RUN echo "filetype plugin indent on\nsyntax on" >> /home/${USERNAME}/.vimrc
+RUN echo "set -g default-terminal \"screen-256color\"" > /home/${USERNAME}/.tmux.conf
+
 USER root
