@@ -66,3 +66,11 @@ RUN apt-get update \
 RUN locale-gen ${LANG} \
     && dpkg-reconfigure locales \
     && update-locale LANG=${LANG} LC_ALL=${LANG}
+
+# install python
+RUN apt-get update \
+    && apt-get install -yqq --no-install-recommends \
+    python3 python3-pip python3-dev python3-setuptools python3-wheel python3-venv \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install --upgrade pip
