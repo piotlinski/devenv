@@ -74,3 +74,16 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN pip3 install --upgrade pip
+
+# install docker
+RUN apt-get update \
+    && apt-get install -yqq --no-install-recommends \
+    apt-transport-https ca-certificates gnupg lsb-release \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+    && echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+        | tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    && apt-get update \
+    && apt-get install -yqq --no-install-recommends docker-ce docker-ce-cli \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && usermod -aG docker ${USERNAME}
