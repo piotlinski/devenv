@@ -1,0 +1,51 @@
+
+services:
+  devenv:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: ${BASE_IMAGE}
+        USERNAME: ${USERNAME}
+        USER_UID: ${USER_UID}
+        USER_GID: ${USER_GID}
+        SSH_PUBKEY: ${SSH_PUBKEY}
+        GLOBAL_PYTHON_VERSION: ${GLOBAL_PYTHON_VERSION}
+        GIT_USER_EMAIL: ${GIT_USER_EMAIL}
+        GIT_USER_NAME: ${GIT_USER_NAME}
+    group_add:
+      - ${DOCKER_GROUP_ID}
+    ipc: host
+    ulimits:
+      stack: 67108864
+      memlock: -1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - workspace:/workspace
+      - tailscale:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    container_name: devenv
+    hostname: ${HOSTNAME}
+    environment:
+      - TS_HOSTNAME=${HOSTNAME}
+      - TS_AUTHKEY=${TAILSCALE_AUTHKEY}
+    restart: unless-stopped
+    cap_add:
+      - net_admin
+      - net_raw
+      - sys_module
+
+volumes:
+  workspace:
+  tailscale:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${TAILSCALE_DIR}
