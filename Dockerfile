@@ -55,7 +55,19 @@ RUN mkdir /home/${USERNAME}/.ssh \
     && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh
 RUN service ssh start
 EXPOSE 22
-CMD ["/usr/sbin/sshd","-D"]
+
+# install tailscale
+RUN apt-get update \
+    && curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/jammy.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
+    && curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/jammy.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
+    && apt-get update \
+    && apt-get install -yqq --no-install-recommends tailscale \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+COPY entrypoint.sh catch-sigint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/catch-sigint.sh
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["catch-sigint.sh"]
 
 # setup locale
 ENV LANG=en_US.UTF-8
