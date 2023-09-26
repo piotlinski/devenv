@@ -101,8 +101,7 @@ RUN apt-get update \
     && usermod -aG docker ${USERNAME}
 
 # setup workspace directory
-RUN mkdir /workspace \
-    && chown -R ${USERNAME}:${USERNAME} /workspace
+RUN chown -R ${USERNAME}:${USERNAME} /workspace
 WORKDIR /workspace
 
 # setup and configure fish
@@ -132,13 +131,13 @@ RUN fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main
     && echo 'direnv hook fish | source' >> /home/${USERNAME}/.config/fish/config.fish"
 
 # setup pyenv
-ARG GLOBAL_PYTHON_VERSION=miniconda3-latest
-RUN fish -c "git clone https://github.com/pyenv/pyenv.git /home/${USERNAME}/.pyenv \
-    && fish_add_path /home/${USERNAME}/.pyenv/bin \ && set -Ux PYENV_ROOT /home/${USERNAME}/.pyenv \
-    && cd /home/${USERNAME}/.pyenv && src/configure && make -C src \
-    && echo 'pyenv init - | source' >> /home/${USERNAME}/.config/fish/config.fish \
-    && pyenv install ${GLOBAL_PYTHON_VERSION} \
-    && pyenv global ${GLOBAL_PYTHON_VERSION}"
+# ARG GLOBAL_PYTHON_VERSION=miniconda3-latest
+# RUN fish -c "git clone https://github.com/pyenv/pyenv.git /home/${USERNAME}/.pyenv \
+#     && fish_add_path /home/${USERNAME}/.pyenv/bin \ && set -Ux PYENV_ROOT /home/${USERNAME}/.pyenv \
+#     && cd /home/${USERNAME}/.pyenv && src/configure && make -C src \
+#     && echo 'pyenv init - | source' >> /home/${USERNAME}/.config/fish/config.fish \
+#     && pyenv install ${GLOBAL_PYTHON_VERSION} \
+#     && pyenv global ${GLOBAL_PYTHON_VERSION}"
 
 # setup pipx
 RUN fish -c "python3 -m pip install --user pipx \
@@ -156,13 +155,13 @@ RUN fish -c "pipx install pytest"
 RUN fish -c "pipx install tox"
 RUN fish -c "pipx install pre-commit"
 RUN fish -c "pipx install awscli"
-RUN fish -c "pipx install poetry \
-    && poetry completions fish > /home/${USERNAME}/.config/fish/completions/poetry.fish"
+# RUN fish -c "pipx install poetry \
+#     && poetry completions fish > /home/${USERNAME}/.config/fish/completions/poetry.fish"
 
 # configure git
 ARG GIT_USER_EMAIL
 ARG GIT_USER_NAME
-RUN echo "[user]\n\
+RUN printf "[user]\n\
 	email = ${GIT_USER_EMAIL}\n\
 	name = ${GIT_USER_NAME}\n\
 [core]\n\
@@ -189,7 +188,7 @@ RUN echo "[user]\n\
 RUN echo ".envrc\n.direnv/" >> /home/${USERNAME}/.gitignore_global
 
 # configure direnv
-RUN echo "layout_poetry() {\n\
+RUN printf "layout_poetry() {\n\
   if [[ ! -f pyproject.toml ]]; then\n\
     log_error 'No pyproject.toml found.  Use `poetry new` or `poetry init` to create one first.'\n\
     exit 2\n\
@@ -199,6 +198,7 @@ RUN echo "layout_poetry() {\n\
   export POETRY_ACTIVE=1\n\
   PATH_add \"\$VENV\"\n\
 }" >> /home/${USERNAME}/.direnvrc
+# use `layout python python --system-site-packages` to use system torch
 
 # minor tweaks
 RUN echo "filetype plugin indent on\nsyntax on" >> /home/${USERNAME}/.vimrc
